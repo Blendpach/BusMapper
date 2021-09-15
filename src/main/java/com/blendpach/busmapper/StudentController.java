@@ -10,7 +10,10 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL; 
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+import org.json.JSONArray;
+//import org.json.parser.JSONParser;
 
 @RestController
 public class StudentController {
@@ -47,7 +50,7 @@ public class StudentController {
     }
 
     @GetMapping("/directions/{startLat}/{startLng}/{endLat}/{endLng}")
-    public static void call_me(@PathVariable("startLat") String startLat,@PathVariable("startLng") String startLng,@PathVariable("endLat") String endLat,@PathVariable("endLng") String endLng) throws Exception {
+    public List<location> getDirectios(@PathVariable("startLat") String startLat,@PathVariable("startLng") String startLng,@PathVariable("endLat") String endLat,@PathVariable("endLng") String endLng) throws Exception {
         String url = "https://maps.googleapis.com/maps/api/directions/json?origin="+startLat+","+startLng+"&destination="+endLat+","+endLng+"&transit_mode=bus&mode=transit&key=AIzaSyDP3V4_sogsaHcONLPS9d59Ccq_IQhDygQ";
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -67,22 +70,43 @@ public class StudentController {
             response.append(inputLine);
         }
         in.close();
-        //print in String
-        System.out.println(response.toString());
-        //Read JSON response and print
-        // JSONObject myResponse = new JSONObject(response.toString());
-        // System.out.println("result after Reading JSON Response");
-        // System.out.println("statusCode- "+myResponse.getString("statusCode"));
-        // System.out.println("statusMessage- "+myResponse.getString("statusMessage"));
-        // System.out.println("ipAddress- "+myResponse.getString("ipAddress"));
-        // System.out.println("countryCode- "+myResponse.getString("countryCode"));
-        // System.out.println("countryName- "+myResponse.getString("countryName"));
-        // System.out.println("regionName- "+myResponse.getString("regionName"));
-        // System.out.println("cityName- "+myResponse.getString("cityName"));
-        // System.out.println("zipCode- "+myResponse.getString("zipCode"));
-        // System.out.println("latitude- "+myResponse.getString("latitude"));
-        // System.out.println("longitude- "+myResponse.getString("longitude"));
-        // System.out.println("timeZone- "+myResponse.getString("timeZone"));  
+
+        JSONTokener tokener = new JSONTokener(response.toString());
+        JSONObject data_obj = new JSONObject(tokener);
+
+        JSONArray routes = (JSONArray) data_obj.get("routes");
+        JSONObject routes_obj = (JSONObject) routes.get(0);
+
+        JSONArray legs = (JSONArray) routes_obj.get("legs");
+        JSONObject legs_obj = (JSONObject) legs.get(0);
+
+        JSONArray steps = (JSONArray) legs_obj.get("steps");
+
+        List<location> locations = new ArrayList<>();
+
+        for (int i = 0; i < steps.length(); i++) {
+
+            JSONObject step = (JSONObject) steps.get(i);
+
+            String mode = step.get("travel_mode").toString();
+
+            JSONObject start = (JSONObject) step.get("start_location");
+            JSONObject end = (JSONObject) step.get("end_location");
+
+            String tempStartLat = start.get("lat").toString();
+            String tempStartLng = start.get("lng").toString();
+
+            String tempEndtLat = end.get("lat").toString();
+            String tempEndtLng = end.get("lng").toString();
+
+            locations.add(new location(mode, tempStartLat, tempStartLng, tempEndtLat, tempEndtLng));
+        }
+
+        //url : http://localhost:57090/directions/6.903313/79.911253/6.812951/79.887970
+
+        //request url : https://maps.googleapis.com/maps/api/directions/json?origin=6.903313,79.911253&destination=6.812951,79.887970&transit_mode=bus&mode=transit&key=AIzaSyDP3V4_sogsaHcONLPS9d59Ccq_IQhDygQ
+    
+        return locations;
     }
    
 
