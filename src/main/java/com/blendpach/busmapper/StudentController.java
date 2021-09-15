@@ -70,26 +70,15 @@ public class StudentController {
             response.append(inputLine);
         }
         in.close();
-        //print in String
-        //System.out.println(response.toString());
-        
-        //Read JSON response and print
-        //JSONObject myResponse = new JSONObject(response.toString());
 
         JSONTokener tokener = new JSONTokener(response.toString());
         JSONObject data_obj = new JSONObject(tokener);
-       
-
-        //JSONParser parse = new JSONParser();
-        //JSONObject data_obj = (JSONObject) parse.parse(response.toString());
 
         JSONArray routes = (JSONArray) data_obj.get("routes");
         JSONObject routes_obj = (JSONObject) routes.get(0);
 
         JSONArray legs = (JSONArray) routes_obj.get("legs");
         JSONObject legs_obj = (JSONObject) legs.get(0);
-
-        // //JSONObject steps = (JSONObject) legs.get("steps");
 
         JSONArray steps = (JSONArray) legs_obj.get("steps");
 
@@ -113,13 +102,11 @@ public class StudentController {
             locations.add(new location(mode, tempStartLat, tempStartLng, tempEndtLat, tempEndtLng));
         }
 
-
         //url : http://localhost:57090/directions/6.903313/79.911253/6.812951/79.887970
 
         //request url : https://maps.googleapis.com/maps/api/directions/json?origin=6.903313,79.911253&destination=6.812951,79.887970&transit_mode=bus&mode=transit&key=AIzaSyDP3V4_sogsaHcONLPS9d59Ccq_IQhDygQ
     
         return locations;
-        //return(locations);
     }
    
 
