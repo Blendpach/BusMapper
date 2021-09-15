@@ -10,9 +10,10 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL; 
-import org.json.simple.JSONObject;
-import org.json.simple.JSONArray;
-import org.json.simple.parser.*;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+import org.json.JSONArray;
+//import org.json.parser.JSONParser;
 
 @RestController
 public class StudentController {
@@ -74,35 +75,40 @@ public class StudentController {
         
         //Read JSON response and print
         //JSONObject myResponse = new JSONObject(response.toString());
+
+        JSONTokener tokener = new JSONTokener(response.toString());
+        JSONObject data_obj = new JSONObject(tokener);
        
 
-        JSONParser parse = new JSONParser();
-        JSONObject data_obj = (JSONObject) parse.parse(response.toString());
+        //JSONParser parse = new JSONParser();
+        //JSONObject data_obj = (JSONObject) parse.parse(response.toString());
 
-        JSONObject routes = (JSONObject) data_obj.get("routes");
+        JSONArray routes = (JSONArray) data_obj.get("routes");
+        JSONObject routes_obj = (JSONObject) routes.get(0);
 
-        JSONObject legs = (JSONObject) routes.get("legs");
+        JSONArray legs = (JSONArray) routes_obj.get("legs");
+        JSONObject legs_obj = (JSONObject) legs.get(0);
 
-        //JSONObject steps = (JSONObject) legs.get("steps");
+        // //JSONObject steps = (JSONObject) legs.get("steps");
 
-        JSONArray steps = (JSONArray) legs.get("steps");
+        JSONArray steps = (JSONArray) legs_obj.get("steps");
 
         List<location> locations = new ArrayList<>();
 
-        for (int i = 0; i < steps.size(); i++) {
+        for (int i = 0; i < steps.length(); i++) {
 
             JSONObject step = (JSONObject) steps.get(i);
 
-            String mode = (String) step.get("travel_mode");
+            String mode = step.get("travel_mode").toString();
 
             JSONObject start = (JSONObject) step.get("start_location");
             JSONObject end = (JSONObject) step.get("end_location");
 
-            String tempStartLat = (String) start.get("lat");
-            String tempStartLng = (String) start.get("lng");
+            String tempStartLat = start.get("lat").toString();
+            String tempStartLng = start.get("lng").toString();
 
-            String tempEndtLat = (String) end.get("lat");
-            String tempEndtLng = (String) end.get("lng");
+            String tempEndtLat = end.get("lat").toString();
+            String tempEndtLng = end.get("lng").toString();
 
             locations.add(new location(mode, tempStartLat, tempStartLng, tempEndtLat, tempEndtLng));
         }
@@ -112,7 +118,8 @@ public class StudentController {
 
         //request url : https://maps.googleapis.com/maps/api/directions/json?origin=6.903313,79.911253&destination=6.812951,79.887970&transit_mode=bus&mode=transit&key=AIzaSyDP3V4_sogsaHcONLPS9d59Ccq_IQhDygQ
     
-        return(locations);
+        return locations;
+        //return(locations);
     }
    
 
