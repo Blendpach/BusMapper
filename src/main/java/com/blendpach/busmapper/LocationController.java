@@ -39,6 +39,8 @@ public class LocationController {
         }
         in.close();
 
+        Utils util = new Utils(false ,false);
+
         JSONTokener tokener = new JSONTokener(response.toString());
         JSONObject data_obj = new JSONObject(tokener);
 
@@ -52,12 +54,9 @@ public class LocationController {
 
         List<location> locations = new ArrayList<>();
 
-        Utils util = new Utils(false ,false);
-      
         for (int i = 0; i < steps.length(); i++) {
 
            JSONObject step = (JSONObject) steps.get(i);
-         
            String mode = step.get("travel_mode").toString();
                       
            if (mode.equals("TRANSIT") && !util.getFirstTransit()){
@@ -69,21 +68,25 @@ public class LocationController {
 
                 locations.add(new location(mode, tempStartLat, tempStartLng ));
 
-            }
-
-            if (mode.equals("TRANSIT") && !util.getEndTransit() && util.getFirstTransit()){
-
-                util.setEndTransit(true);
-                JSONObject end = (JSONObject) step.get("end_location");
-                String tempEndtLat =  end.get("lat").toString();
-                String tempEndtLng =  end.get("lng").toString();
-
-                locations.add(new location(mode, tempEndtLat, tempEndtLng));
-
-            }
-
-                      
+            }         
         }
+
+        for (int i = steps.length()-1; i > 0; i--) {           
+
+            JSONObject step2 = (JSONObject) steps.get(i);
+            String mode = step2.get("travel_mode").toString();          
+                       
+            if (mode.equals("TRANSIT") && !util.getEndTransit() && util.getFirstTransit()){
+ 
+                 util.setEndTransit(true);
+                 JSONObject end = (JSONObject) step2.get("end_location");
+                 String tempEndtLat =  end.get("lat").toString();
+                 String tempEndtLng =  end.get("lng").toString();
+ 
+                 locations.add(new location(mode, tempEndtLat, tempEndtLng));
+ 
+             }          
+         }
 
         return locations;
     }
