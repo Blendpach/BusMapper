@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -13,7 +12,7 @@ import java.net.URL;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.json.JSONArray;
-//import org.json.parser.JSONParser;
+
 
 @RestController
 public class StudentController {
@@ -84,28 +83,39 @@ public class StudentController {
 
         List<location> locations = new ArrayList<>();
 
+        Utils util = new Utils(false ,false);
+      
         for (int i = 0; i < steps.length(); i++) {
 
-            JSONObject step = (JSONObject) steps.get(i);
+           JSONObject step = (JSONObject) steps.get(i);
+         
+           String mode = step.get("travel_mode").toString();
+                      
+           if (mode.equals("TRANSIT") && !util.getFirstTransit()){
 
-            String mode = step.get("travel_mode").toString();
+                util.setFirstTransit(true);
+                JSONObject start = (JSONObject) step.get("start_location");
+                String tempStartLat = start.get("lat").toString();
+                String tempStartLng = start.get("lng").toString();
 
-            JSONObject start = (JSONObject) step.get("start_location");
-            JSONObject end = (JSONObject) step.get("end_location");
+                locations.add(new location(mode, tempStartLat, tempStartLng ));
 
-            String tempStartLat = start.get("lat").toString();
-            String tempStartLng = start.get("lng").toString();
+            }
 
-            String tempEndtLat = end.get("lat").toString();
-            String tempEndtLng = end.get("lng").toString();
+            if (mode.equals("TRANSIT") && !util.getEndTransit() && util.getFirstTransit()){
 
-            locations.add(new location(mode, tempStartLat, tempStartLng, tempEndtLat, tempEndtLng));
+                util.setEndTransit(true);
+                JSONObject end = (JSONObject) step.get("end_location");
+                String tempEndtLat =  end.get("lat").toString();
+                String tempEndtLng =  end.get("lng").toString();
+
+                locations.add(new location(mode, tempEndtLat, tempEndtLng));
+
+            }
+
+                      
         }
 
-        //url : http://localhost:57090/directions/6.903313/79.911253/6.812951/79.887970
-
-        //request url : https://maps.googleapis.com/maps/api/directions/json?origin=6.903313,79.911253&destination=6.812951,79.887970&transit_mode=bus&mode=transit&key=AIzaSyDP3V4_sogsaHcONLPS9d59Ccq_IQhDygQ
-    
         return locations;
     }
    
