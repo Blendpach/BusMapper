@@ -2,24 +2,17 @@ package com.blendpach.busmapper;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.tools.DocumentationTool.Location;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriBuilder;
-
-
 import java.io.BufferedReader;
-import java.io.Console;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL; 
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.json.JSONArray;
-//import org.json.parser.JSONParser;
+
 
 @RestController
 public class StudentController {
@@ -91,158 +84,38 @@ public class StudentController {
         List<location> locations = new ArrayList<>();
 
         Utils util = new Utils(false ,false);
-        location loc = new location("TRANSIT","","");
-        // String mode  = "";
-
-
+      
         for (int i = 0; i < steps.length(); i++) {
 
-            JSONObject step = (JSONObject) steps.get(i);          
-            String  mode = step.get("travel_mode").toString();
-
-            // JSONObject step = (JSONObject) steps.get(i);
-            
-            // // String mode = step.get("travel_mode").toString();
-              
-            // String mode = step.getString("travel_mode");
-           
-            loc.setMode("TRANSIT");
-
-            if (mode==loc.getMode() && !util.getFirstTransit()){
+           JSONObject step = (JSONObject) steps.get(i);
+         
+           String mode = step.get("travel_mode").toString();
+                      
+           if (mode.equals("TRANSIT") && !util.getFirstTransit()){
 
                 util.setFirstTransit(true);
                 JSONObject start = (JSONObject) step.get("start_location");
                 String tempStartLat = start.get("lat").toString();
                 String tempStartLng = start.get("lng").toString();
 
-                // util.setStartLat(tempStartLat);
-                // util.setStartLng(tempStartLng);
-
                 locations.add(new location(mode, tempStartLat, tempStartLng ));
 
             }
 
-            if (mode==loc.getMode() && !util.getEndTransit() && util.getFirstTransit()){
+            if (mode.equals("TRANSIT") && !util.getEndTransit() && util.getFirstTransit()){
 
                 util.setEndTransit(true);
                 JSONObject end = (JSONObject) step.get("end_location");
                 String tempEndtLat =  end.get("lat").toString();
                 String tempEndtLng =  end.get("lng").toString();
 
-                // util.setEndtLat(tempEndtLat);
-                // util.setEndtLng(tempEndtLng);
-
                 locations.add(new location(mode, tempEndtLat, tempEndtLng));
 
             }
 
-            // loc.setMode(mode);
-            // System.out.print("mode is = ");
-            // System.out.println(loc);
-
-            // locations.add(new location(mode, "tempStartLat", "tempStartLng" ));
-
-            // if (mode==loc.getMode()){
-
-            //     util.setFirstTransit(true);
-            //     JSONObject start = (JSONObject) step.get("start_location");
-            //     String tempStartLat = start.get("lat").toString();
-            //     String tempStartLng = start.get("lng").toString();
-
-            //     // util.setStartLat(tempStartLat);
-            //     // util.setStartLng(tempStartLng);
-
-            //     locations.add(new location(mode, tempStartLat, tempStartLng ));
-
-            // }
-
-
-
-
-
-
-            // if (mode=="TRANSIT" && !util.getFirstTransit()){
-
-            //     util.setFirstTransit(true);
-            //     JSONObject start = (JSONObject) step.get("start_location");
-            //     Float tempStartLat = (Float) start.get("lat");
-            //     Float tempStartLng = (Float) start.get("lng");
-
-            //     util.setStartLat(tempStartLat);
-            //     util.setStartLng(tempStartLng);
-
-            //     locations.add(new location(mode, util.getStartLat(), 
-            //                                         util.getStartLng(),
-            //                                             util.getEndtLat(),
-            //                                                 util.getEndtLng() ));
-
-            // }
-
-            // if (mode=="TRANSIT" && !util.getEndTransit() && util.getFirstTransit()){
-
-            //     util.setEndTransit(true);
-            //     JSONObject end = (JSONObject) step.get("end_location");
-            //     Float tempEndtLat = (Float) end.get("lat");
-            //     Float tempEndtLng = (Float) end.get("lng");
-
-            //     util.setEndtLat(tempEndtLat);
-            //     util.setEndtLng(tempEndtLng);
-
-            //     locations.add(new location(mode, util.getStartLat(), 
-            //                                         util.getStartLng(),
-            //                                             util.getEndtLat(),
-            //                                                 util.getEndtLng() ));
-
-            // }
-
-
-           
-            
-            // mode = step.get("travel_mode").toString();
-            // JSONObject start = (JSONObject) step.get("start_location");
-            // float tempStartLat = (float) start.get("lat");
-            // float tempStartLng = (float) start.get("lng");
-
-            // JSONObject end = (JSONObject) step.get("end_location");
-            // float tempEndtLat = (float) end.get("lat");
-            // float tempEndtLng = (float) end.get("lng");
-
-            // locations.add(new location(mode, tempStartLat,tempStartLng,tempEndtLat,tempEndtLng));
-
-           
+                      
         }
 
-        // if(!util.getFirstTransit()){
-
-        //     float a = 0;
-        //     float b = 0;
-        //     float c = 0;
-        //     float d = 0;
-
-
-        //     locations.add(new location("First NOT IDEANTIFIED", a,b,c,d ));
-        // }
-
-        // if(!util.getEndTransit()){
-
-        //     float a = 0;
-        //     float b = 0;
-        //     float c = 0;
-        //     float d = 0;
-
-
-        //     locations.add(new location("Second NOT IDEANTIFIED", a,b,c,d ));
-        // }
-
-        //   locations.add(new location(mode, util.getStartLat(), 
-        //                                         util.getStartLng(),
-        //                                             util.getEndtLat(),
-        //                                                 util.getEndtLng() ));
-
-        //url : http://localhost:57090/directions/6.903313/79.911253/6.812951/79.887970
-
-        //request url : https://maps.googleapis.com/maps/api/directions/json?origin=6.903313,79.911253&destination=6.812951,79.887970&transit_mode=bus&mode=transit&key=AIzaSyDP3V4_sogsaHcONLPS9d59Ccq_IQhDygQ
-    
         return locations;
     }
    
