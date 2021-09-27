@@ -88,8 +88,15 @@ public class LocationController {
              }          
          }
 
+            JSONArray passingJSONArray = new JSONArray(locations);
+            ScheduleCntroller sched = new ScheduleCntroller();
+            String getOutPutFromSchedule =  sched.generateSchedule(passingJSONArray);
+            System.out.println("Data coming from schedule controller = " + getOutPutFromSchedule);
+         
+
+        //return locations;
         return locations;
     }
-   
 
+  
 }
