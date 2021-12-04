@@ -15,10 +15,10 @@ import org.json.JSONArray;
 
 
 @RestController
-public class LocationController {
+public class RouteSummaryController {
    
-    @GetMapping("/directions/{startLat}/{startLng}/{endLat}/{endLng}")
-    public List<location> getDirectios(@PathVariable("startLat") String startLat,@PathVariable("startLng") String startLng,@PathVariable("endLat") String endLat,@PathVariable("endLng") String endLng) throws Exception {
+    @GetMapping("/routesummary/{startLat}/{startLng}/{endLat}/{endLng}")
+    public List<routedata> getSummary(@PathVariable("startLat") String startLat,@PathVariable("startLng") String startLng,@PathVariable("endLat") String endLat,@PathVariable("endLng") String endLng) throws Exception {
         String url = "https://maps.googleapis.com/maps/api/directions/json?origin="+startLat+","+startLng+"&destination="+endLat+","+endLng+"&transit_mode=bus&mode=transit&key=AIzaSyDP3V4_sogsaHcONLPS9d59Ccq_IQhDygQ";
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -39,8 +39,7 @@ public class LocationController {
         }
         in.close();
 
-        Utils util = new Utils(false ,false);
-
+       
         JSONTokener tokener = new JSONTokener(response.toString());
         JSONObject data_obj = new JSONObject(tokener);
 
@@ -52,50 +51,40 @@ public class LocationController {
 
         JSONArray steps = (JSONArray) legs_obj.get("steps");
 
-        List<location> locations = new ArrayList<>();
+        List<routedata> summary = new ArrayList<>();
 
         for (int i = 0; i < steps.length(); i++) {
 
-           JSONObject step = (JSONObject) steps.get(i);
-           String mode = step.get("travel_mode").toString();
-                      
-           if (mode.equals("TRANSIT") && !util.getFirstTransit()){
+            JSONObject step = (JSONObject) steps.get(i);
+      
+           JSONObject distance = (JSONObject) step.get("distance");
+           String distance_value = distance.get("value").toString(); //distance is in meters 
+           System.out.println("distance_value is = " +  distance_value);
 
-                util.setFirstTransit(true);
-                JSONObject start = (JSONObject) step.get("start_location");
-                String tempStartLat = start.get("lat").toString();
-                String tempStartLng = start.get("lng").toString();
+           JSONObject duration = (JSONObject) step.get("duration");
+           String duration_value = duration.get("value").toString(); //distance is in meters 
+           System.out.println("duration_value is = " +  duration_value);
 
-                locations.add(new location(mode, tempStartLat, tempStartLng ));
+           String html_instructions_txt = step.get("html_instructions").toString(); 
+           System.out.println("html_instructions_txt is = " +  html_instructions_txt);
 
-            }         
+           String travel_mode = step.get("travel_mode").toString();
+           System.out.println("travel_mode is = " +  travel_mode);
+
+           JSONObject start_location = (JSONObject) step.get("start_location");
+           String start_lata = start_location.get("lat").toString();
+           String start_lang = start_location.get("lng").toString();
+
+           JSONObject end_location = (JSONObject) step.get("end_location");
+           String end_lat = end_location.get("lat").toString();
+           String end_lang = end_location.get("lng").toString();
+
+           summary.add(new routedata(travel_mode, distance_value, duration_value, html_instructions_txt , start_lata , start_lang, end_lat, end_lang));  
+           System.out.println("for loop " + summary );   
+
         }
 
-        for (int i = steps.length()-1; i > 0; i--) {           
-
-            JSONObject step2 = (JSONObject) steps.get(i);
-            String mode = step2.get("travel_mode").toString();          
-                       
-            if (mode.equals("TRANSIT") && !util.getEndTransit() && util.getFirstTransit()){
- 
-                 util.setEndTransit(true);
-                 JSONObject end = (JSONObject) step2.get("end_location");
-                 String tempEndtLat =  end.get("lat").toString();
-                 String tempEndtLng =  end.get("lng").toString();
- 
-                 locations.add(new location(mode, tempEndtLat, tempEndtLng));
- 
-             }          
-         }
-
-            JSONArray passingJSONArray = new JSONArray(locations);
-            ScheduleController sched = new ScheduleController();
-            String getOutPutFromSchedule =  sched.generateSchedule(passingJSONArray);
-            System.out.println("Data coming from schedule controller = " + getOutPutFromSchedule);
-         
-
-        //return locations;
-        return locations;
+         return summary;
     }
 
   

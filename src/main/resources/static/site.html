@@ -1,0 +1,36 @@
+<script th:inline="javascript">
+  function initMap() {
+    var map = new google.maps.Map(document.getElementById('map'), {
+    zoom: 4
+    });
+    var data = /*[[${items}]]*/;
+    var bounds  = new google.maps.LatLngBounds();
+    var infowindow = new google.maps.InfoWindow();
+    for(var i=0; i< data.length;i++) {
+        if(data[i].lat !== null && data[i].lat !== "") {
+            var marker = new google.maps.Marker({
+              position: {lat: parseFloat(data[i].lat), lng: parseFloat(data[i].lng)},
+              map: map,
+              title: data[i].name
+            });
+            var infoContent = '<div id="content">'+
+            '<h1 id="firstHeading" class="firstHeading">' + data[i].name + '</h1>'+
+            '<p><img src="' + data[i].image + '"><br>' + data[i].description + '</p>'+
+            '</div>';
+            google.maps.event.addListener(marker,'click', (function(marker,content){
+                return function() {
+                    infowindow.setContent(content);
+                    infowindow.open(map,marker);
+                };
+            })(marker,infoContent));
+            var loc = new google.maps.LatLng(marker.position.lat(), marker.position.lng());
+            bounds.extend(loc);
+        }
+     }
+    map.fitBounds(bounds);
+    map.panToBounds(bounds);
+  }
+</script>
+<script async defer
+        th:src="|https://maps.googleapis.com/maps/api/js?key=${mapsKey}&callback=initMap|">
+</script>
