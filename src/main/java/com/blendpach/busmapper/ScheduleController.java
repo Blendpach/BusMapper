@@ -1,31 +1,23 @@
 package com.blendpach.busmapper;
 
-import java.util.List;
 
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
-
-public class ScheduleCntroller {
+public class ScheduleController {
    
      private String inputObj;
      private String outputObj;
 
-    public ScheduleCntroller(){
-
+    public ScheduleController(){
     }
 
-    public ScheduleCntroller(String inputObj , String outputObj){
+    public ScheduleController(String inputObj , String outputObj){
         this.inputObj = inputObj;
         this.outputObj  = outputObj;
-
     }
 
 
     public String generateSchedule(org.json.JSONArray passingJSONArray) {
        
-       //JSONObject routes_obj = (JSONObject) passingJSONArray.get(0);
-       System.out.println(passingJSONArray);
-
+       System.out.println("passingJSONArray is "  + passingJSONArray);
        return passingJSONArray.toString();
    
     }
