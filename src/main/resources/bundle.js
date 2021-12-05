@@ -167,36 +167,36 @@
             //       alert("test 1 NOT near edge");
             //   }
 
-            service = new google.maps.places.PlacesService(map);
-            for (let j = 0; j < waypoints.length; j += 40) {
-              service.nearbySearch(
-                {
-                  location: { lat: waypoints[j][0], lng: waypoints[j][1] },
-                  radius: "20000",
-                  type: ["restaurant"],
-                },
-                callback
-              );
+            // service = new google.maps.places.PlacesService(map);
+            // for (let j = 0; j < waypoints.length; j += 40) {
+            //   service.nearbySearch(
+            //     {
+            //       location: { lat: waypoints[j][0], lng: waypoints[j][1] },
+            //       radius: "20000",
+            //       type: ["restaurant"],
+            //     },
+            //     callback
+            //   );
 
-              function callback(results, status) {
-                if (status == google.maps.places.PlacesServiceStatus.OK) {
-                  for (let i = 0; i < results.length; i++) {
-                    if (
-                      google.maps.geometry.poly.containsLocation(
-                        results[i].geometry.location,
-                        PolygonBound
-                      ) == true
-                    ) {
-                      new google.maps.Marker({
-                        position: results[i].geometry.location,
-                        map,
-                        title: "Hello World!",
-                      });
-                    }
-                  }
-                }
-              }
-            }
+            //   function callback(results, status) {
+            //     if (status == google.maps.places.PlacesServiceStatus.OK) {
+            //       for (let i = 0; i < results.length; i++) {
+            //         if (
+            //           google.maps.geometry.poly.containsLocation(
+            //             results[i].geometry.location,
+            //             PolygonBound
+            //           ) == true
+            //         ) {
+            //           new google.maps.Marker({
+            //             position: results[i].geometry.location,
+            //             map,
+            //             title: "Hello World!",
+            //           });
+            //         }
+            //       }
+            //     }
+            //   }
+            // }
           });
           directionsRenderer.setMap(map);
         }
