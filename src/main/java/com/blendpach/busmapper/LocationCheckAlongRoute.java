@@ -48,7 +48,7 @@ public class LocationCheckAlongRoute {
             engine.eval(new FileReader(file));
             Invocable invocable = (Invocable) engine;
             Object result;
-            result = invocable.invokeFunction("functionDemo111", "Vidusha");
+            result = invocable.invokeFunction("functionDemo2", "Vidusha");
 
             System.out.println("result is " + result);
             System.out.println("result class is " + result.getClass());
