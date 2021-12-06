@@ -95,6 +95,7 @@ public class AlgorithmController {
         // }else{
         // return false;
         // }
+
         System.out.println("STARTPOINT " + STARTPOINT);
         System.out.println("ENDPOINT " + ENDPOINT);
         System.out.println("MIDPOINT " + MIDPOINT);

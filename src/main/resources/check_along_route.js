@@ -1,6 +1,6 @@
 
 
-{/* <script type="text/javascript" src="bundle.js"></script> */}
+<script type="text/javascript" src="bundle.js"></script> */}
 
 
 var functionDemo1 = function(){  
